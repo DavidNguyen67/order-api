@@ -79,7 +79,7 @@ public class OrderService {
                 .eventType(KafkaTopics.EVENT_TYPE_ORDER_CREATED)
                 .topic(KafkaTopics.ORDER_EVENTS_TOPIC)
                 .payload(JsonUtils.toJson(event))
-                .traceId(TraceContext.getTraceId())
+                .requestId(TraceContext.getRequestId())
                 .status(OutboxStatus.PENDING)
                 .retryCount(0)
                 .build();
@@ -134,7 +134,7 @@ public class OrderService {
                 .eventType(KafkaTopics.EVENT_TYPE_ORDER_STATUS_CHANGED)
                 .topic(KafkaTopics.ORDER_EVENTS_TOPIC)
                 .payload(JsonUtils.toJson(event))
-                .traceId(TraceContext.getTraceId())
+                .requestId(TraceContext.getRequestId())
                 .status(OutboxStatus.PENDING)
                 .retryCount(0)
                 .build();

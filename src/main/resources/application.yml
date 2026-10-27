@@ -34,6 +34,6 @@ spring:
 
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [traceId=%X{traceId:-N/A}] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [requestId=%X{requestId:-N/A}] %-5level %logger{36} - %msg%n"
   level:
     com.core: DEBUG

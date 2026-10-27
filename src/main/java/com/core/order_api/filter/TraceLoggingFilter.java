@@ -22,7 +22,7 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class TraceLoggingFilter extends OncePerRequestFilter {
 
-    public static final String TRACE_HEADER = "X-Trace-Id";
+    public static final String X_REQUEST_ID = "X-Request-ID";
 
     @Override
     protected void doFilterInternal(
@@ -30,26 +30,26 @@ public class TraceLoggingFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String traceId = request.getHeader(TRACE_HEADER);
-        if (traceId == null || traceId.isBlank()) {
-            traceId = IdGenerator.nextSimpleUuid();
+        String requestId = request.getHeader(X_REQUEST_ID);
+        if (requestId == null || requestId.isBlank()) {
+            requestId = IdGenerator.nextSimpleUuid();
         }
 
-        TraceContext.setTraceId(traceId);
-        response.setHeader(TRACE_HEADER, traceId);
+        TraceContext.setRequestId(requestId);
+        response.setHeader(X_REQUEST_ID, requestId);
 
         long startTime = System.currentTimeMillis();
         String method = request.getMethod();
         String uri = request.getRequestURI();
 
-        log.info("[HTTP Inbound] {} {} -> TraceId: [{}]", method, uri, traceId);
+        log.info("[HTTP Inbound] {} {} -> RequestId: [{}]", method, uri, requestId);
 
         try {
             filterChain.doFilter(request, response);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
-            log.info("[HTTP Outbound] {} {} -> Status: [{}], Duration: [{}ms]",
-                    method, uri, response.getStatus(), duration);
+            log.info("[HTTP Outbound] {} {} -> Status: [{}], Duration: [{}ms], RequestId: [{}]",
+                    method, uri, response.getStatus(), duration, requestId);
             TraceContext.clear();
         }
     }

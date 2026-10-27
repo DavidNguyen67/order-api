@@ -40,11 +40,11 @@ public class KafkaEventPublisher {
         String topic = outbox.getTopic();
         String eventId = outbox.getEventId();
         String aggregateId = outbox.getAggregateId();
-        String traceId = outbox.getTraceId() != null ? outbox.getTraceId() : TraceContext.getTraceId();
+        String requestId = outbox.getRequestId() != null ? outbox.getRequestId() : TraceContext.getRequestId();
 
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, aggregateId, outbox.getPayload());
-        record.headers().add(new RecordHeader(TraceContext.TRACE_ID_KEY, traceId.getBytes(StandardCharsets.UTF_8)));
-        record.headers().add(new RecordHeader(TraceContext.CORRELATION_ID_KEY, traceId.getBytes(StandardCharsets.UTF_8)));
+        record.headers().add(new RecordHeader(TraceContext.REQUEST_ID_KEY, requestId.getBytes(StandardCharsets.UTF_8)));
+        record.headers().add(new RecordHeader(TraceContext.CORRELATION_ID_KEY, requestId.getBytes(StandardCharsets.UTF_8)));
         record.headers().add(new RecordHeader("eventType", outbox.getEventType().getBytes(StandardCharsets.UTF_8)));
 
         long startTime = System.currentTimeMillis();
@@ -91,7 +91,7 @@ public class KafkaEventPublisher {
                     .offset(offset)
                     .payload(outbox.getPayload())
                     .status(EventStatus.PUBLISHED)
-                    .traceId(outbox.getTraceId())
+                    .requestId(outbox.getRequestId())
                     .createdAt(Instant.now())
                     .processedAt(Instant.now())
                     .build();
